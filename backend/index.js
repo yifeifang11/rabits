@@ -1,9 +1,9 @@
 const express = require("express");
-const { PORT, mongoDBURL } = require("./config");
 const mongoose = require("mongoose");
 const carrotsRoute = require("./routes/carrotsRoute");
 const habitsRoute = require("./routes/habitsRoute");
 const cors = require("cors");
+const dotenv = require("dotenv").config();
 
 const app = express();
 
@@ -19,10 +19,12 @@ app.use("/habits", habitsRoute);
 app.use("/carrots", carrotsRoute);
 
 mongoose
-  .connect(mongoDBURL)
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("App connected to database");
-    app.listen(PORT, () => console.log(`Listening to port ${PORT}`));
+    app.listen(process.env.PORT, () =>
+      console.log(`Listening to port ${process.env.PORT}`)
+    );
   })
   .catch((error) => {
     console.log(error);
