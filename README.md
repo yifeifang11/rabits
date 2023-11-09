@@ -8,4 +8,4 @@ To run the app locally on your own device: clone the repo, add .env file in the 
 
 ### Future Goals
 
-I hope to implement user authentication for future versions. There is currently only one account for this test version. You can view it here: https://rabits.onrender.com.
+I hope to implement user authentication for future versions. There is currently only one account for this test version. You can view it here: https://rabits.onrender.com. If the backend does not load, please refresh the page a few times and wait a couple of minutes.
