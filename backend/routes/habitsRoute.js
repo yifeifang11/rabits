@@ -1,5 +1,6 @@
 const express = require("express");
 const Habit = require("../models/habitModel");
+const User = require("../models/userModel");
 
 const router = express.Router();
 
@@ -16,8 +17,12 @@ router.post("/", async (req, res) => {
       description: req.body.description ? req.body.description : "",
       count: 0,
       goal: req.body.goal,
+      user: req.body.user,
     };
     const habit = await Habit.create(newHabit);
+    const user = await User.findById(req.body.user);
+    user.habits.push(habit);
+    user.save();
     return res.status(201).send(habit);
   } catch (error) {
     console.log(error);
@@ -36,6 +41,20 @@ router.get("/", async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: error.message });
+  }
+});
+
+router.put("/user", async (req, res) => {
+  try {
+    const user = await User.findById(req.body.userID);
+    const habits = await Habit.find({
+      _id: { $in: user.habits },
+    });
+    return res.status(200).json({
+      habits: habits,
+    });
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -75,15 +94,15 @@ router.put("/:id", async (req, res) => {
 });
 
 //complete habit
-router.put("/carrot/:id", async (req, res) => {
+router.put("/count/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const habit = await Habit.findById(id);
-    var count = habit.count;
-    count++;
+    var newCount = habit.count;
+    newCount++;
 
     const result = await Habit.findByIdAndUpdate(id, {
-      count: count,
+      count: newCount,
     });
 
     if (!result) {

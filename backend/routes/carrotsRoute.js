@@ -1,14 +1,16 @@
 const express = require("express");
 const Carrot = require("../models/carrotModel");
+const User = require("../models/userModel");
 
 const router = express.Router();
 
 //post carrot
 router.post("/", async (req, res) => {
   try {
-    const newCarrot = {};
-    const carrot = await Carrot.create(newCarrot);
-    return res.status(201).send(carrot);
+    const user = await User.findById(req.body.userID);
+    user.carrots = user.carrots + 1;
+    user.save();
+    return res.status(201).json({ carrots: user.carrots });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: error.message });
@@ -16,12 +18,11 @@ router.post("/", async (req, res) => {
 });
 
 //get all carrots
-router.get("/", async (req, res) => {
+router.put("/", async (req, res) => {
   try {
-    const carrots = await Carrot.find({});
+    const user = await User.findById(req.body.userID);
     return res.status(200).json({
-      count: carrots.length,
-      carrots: carrots,
+      count: user.carrots,
     });
   } catch (error) {
     console.log(error);
@@ -29,29 +30,13 @@ router.get("/", async (req, res) => {
   }
 });
 
-//delete carrot
-router.delete("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const result = await Carrot.findByIdAndDelete(id);
-
-    if (!result) {
-      return res.status(404).json({ message: "No carrots" });
-    }
-
-    return res.status(200).json({ message: "Carrot removed" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: error.message });
-  }
-});
-
 //delete all carrots
-router.delete("/", async (req, res) => {
+router.delete("/:userID", async (req, res) => {
   try {
-    await Carrot.deleteMany({});
-
+    await Carrot.deleteMany({ user: req.params.userID });
+    const user = await User.findById(req.params.userID);
+    user.carrots = 0;
+    user.save();
     return res.status(200).json({ message: "Carrots all removed" });
   } catch (error) {
     console.log(error);

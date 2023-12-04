@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const carrotsRoute = require("./routes/carrotsRoute");
 const habitsRoute = require("./routes/habitsRoute");
 const cors = require("cors");
+const userRoute = require("./routes/userRoute");
 const dotenv = require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 
 app.use("/habits", habitsRoute);
 app.use("/carrots", carrotsRoute);
+app.use("/auth", userRoute);
 
 mongoose
   .connect(process.env.MONGODB_URI)
